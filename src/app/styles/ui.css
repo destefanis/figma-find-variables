@@ -35,6 +35,12 @@ button {
   text-align: center;
 }
 
+.loading-state {
+  position: absolute;
+  height: 48px;
+  width: 48px;
+}
+
 .empty-state {
   width: 320px;
   text-align: center;

@@ -1,6 +1,7 @@
 figma.showUI(__html__, { width: 443, height: 580 });
 
-// Styles used in our page
+// Variables object we'll use for storing all the variables
+// found in our page.
 let variablesInUse = {
   name: "Variables",
   variables: [],
@@ -8,17 +9,8 @@ let variablesInUse = {
 
 figma.ui.onmessage = (msg) => {
 
+  // When the user presses the button in the default or empty state.
   if (msg.type === 'find-variables') {
-    // let localVariables = figma.variables.getLocalVariables();
-    // console.log(figma.variables);
-    // console.log(localVariables);
-
-    // let localVariablesCollections = figma.variables.getLocalVariableCollections();
-    // console.log(localVariablesCollections);
-
-    // let subscribedVariables = figma.variables.getSubscribedVariables();
-    // console.log(variablesInUse);
-
     function determineFill(fills) {
       let fillValues = [];
 
@@ -81,6 +73,7 @@ figma.ui.onmessage = (msg) => {
       return figmaColor;
     };
 
+    // Convert the fill info from the API into a hex value to display.
     function RGBToHex(r, g, b) {
       r = Number(r).toString(16);
       g = Number(g).toString(16);
@@ -93,6 +86,7 @@ figma.ui.onmessage = (msg) => {
       return "#" + r + g + b;
     }
 
+    // Gradients aren't supported in variables yet.
     function gradientToCSS(nodeFill) {
       const nodeFillType = nodeFill.type;
       let cssGradient = "";
@@ -142,9 +136,15 @@ figma.ui.onmessage = (msg) => {
         .findAllWithCriteria({
           types: [
             "TEXT",
+            "BOOLEAN_OPERATION",
             "FRAME",
             "COMPONENT",
+            "COMPONENT_SET",
+            "GROUP",
+            "SECTION",
+            "STAR",
             "RECTANGLE",
+            "POLYGON",
             "ELLIPSE",
             "INSTANCE",
             "VECTOR",
@@ -291,8 +291,6 @@ figma.ui.onmessage = (msg) => {
           });
         }
       }
-
-      console.log("Variables:", variablesInUse);
     }
 
     findVariables().then(() => {
@@ -313,13 +311,13 @@ figma.ui.onmessage = (msg) => {
         return groupedConsumers;
       };
 
-      // Function to apply groupConsumersByType to the global styles library
+      // Function to apply groupConsumersByType to the global variable library
       const applyGroupingToLibrary = variablesLibrary => {
         return Object.fromEntries(
           Object.entries(variablesLibrary).map(([key, value]) => {
-            // Check if the value is an array (i.e., styles)
+            // Check if the value is an array
             if (Array.isArray(value)) {
-              // Apply the groupConsumersByType function to the styles
+              // Apply the groupConsumersByType function to the variables
               const variablesWithGroupedConsumers = value.map(variable => {
                 const groupedConsumers = groupConsumersByType(
                   variable.consumers
@@ -342,13 +340,16 @@ figma.ui.onmessage = (msg) => {
         variablesInUse
       );
 
+      // Let the UI know we're done and send the
+      // variables back to be displayed.
       figma.ui.postMessage({
         type: "variables-imported",
         message: variablesWithGroupedConsumers
       });
-
-      console.log(variablesWithGroupedConsumers);
     });
+  
+    // When the user clicks on a variable or one of the layer types
+    // using the variable, we need to select those nodes.
   } else if (msg.type === "select-multiple-layers") {
     const layerArray = msg.nodeArray;
     let nodesToBeSelected = [];
@@ -359,11 +360,13 @@ figma.ui.onmessage = (msg) => {
       nodesToBeSelected.push(layer);
     });
 
-    // Moves the layer into focus and selects so the user can update it.
+    // Moves the layer into focus and selects it.
     figma.currentPage.selection = nodesToBeSelected;
     figma.viewport.scrollAndZoomIntoView(nodesToBeSelected);
+
+    // Let the user know what layers we selected and why.
     figma.notify(`${nodesToBeSelected.length} layers selected using ${msg.name}`, {
-      timeout: 1000
+      timeout: 1500
     });
   }
 };

@@ -92,15 +92,15 @@ const VariableListItem = ({ variable }) => {
           </div>
         </div>
         <div className="column column-2">
-        <div className="item-content">
-          {variable.cssSyntax !== null && (
-            <div
-              className="color-indicator"
-              style={{ backgroundColor: variable.cssSyntax }}
-            ></div>
-          )}
-          <div className="item-value">{value}</div>
-        </div>
+          <div className="item-content">
+            {variable.cssSyntax !== null && (
+              <div
+                className="color-indicator"
+                style={{ backgroundColor: variable.cssSyntax }}
+              ></div>
+            )}
+            <div className="item-value">{value}</div>
+          </div>
         </div>
       </div>
     </li>

@@ -8,12 +8,13 @@ import '../styles/ui.css';
 function App() {
   const [variablesInUse, setVariablesInUse] = useState([]);
   const [loadingDone, setLoadingDone] = useState(false);
+  const [showPreloader, setShowPreloader] = useState(false);
 
   const variablesInUseRef = useRef([]);
 
   const onFindVariables = () => {
     parent.postMessage({ pluginMessage: { type: 'find-variables' } }, '*');
-    
+    setShowPreloader(true);
   };
 
   React.useEffect(() => {
@@ -21,6 +22,7 @@ function App() {
       const { type, message } = event.data.pluginMessage;
       if (type === 'variables-imported') {
         setVariablesInUse((prevVariablesInUse) => [...prevVariablesInUse, ...message.variables]);
+        // Wait for 2 seconds before setting loading to done
         setLoadingDone(true);
       }
     };
@@ -34,16 +36,39 @@ function App() {
     <div>
       {!loadingDone ? (
         <div className="page">
-          <div className="initial-state">
-            <img src={variableIcon} />
-            <p className="paragraph">Scan your page to find which variables are being used by different layers.</p>
-            <button className="button" onClick={onFindVariables}>
-              Find Variables
-            </button>
-          </div>
-          {/* <div className="loading-state">
-            <img src={variableIconBrand} />
-          </div> */}
+          <AnimatePresence>
+            {!showPreloader ? (
+              <motion.div className="initial-state"
+                initial={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.15 }}
+                key="inital-state"
+              >
+                <motion.img
+                  src={variableIcon}
+                />
+                <p className="paragraph">Scan your page to find which variables are being used by different layers.</p>
+                <button className="button" onClick={onFindVariables}>
+                  Find Variables
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div className="loading-state"
+                initial={{ opacity: 0, y: 10, scale: 0 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0 }}
+                transition={{ duration: 0.15 }}
+                key="loading-state"
+              >
+                <motion.img
+                  src={variableIconBrand}
+                  animate={{ rotate: 60 }}
+                  transition={{ repeat: Infinity, duration: 0.25, repeatDelay: 0.5 }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       ) : (
         <div>
