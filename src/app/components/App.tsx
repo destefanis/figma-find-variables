@@ -22,7 +22,6 @@ function App() {
       const { type, message } = event.data.pluginMessage;
       if (type === 'variables-imported') {
         setVariablesInUse((prevVariablesInUse) => [...prevVariablesInUse, ...message.variables]);
-        // Wait for 2 seconds before setting loading to done
         setLoadingDone(true);
       }
     };
@@ -54,19 +53,14 @@ function App() {
                 </button>
               </motion.div>
             ) : (
-              <motion.div className="loading-state"
-                initial={{ opacity: 0, y: 10, scale: 0 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0 }}
-                transition={{ duration: 0.15 }}
+              <div className="loading-state"
                 key="loading-state"
               >
-                <motion.img
+                <img
                   src={variableIconBrand}
-                  animate={{ rotate: 60 }}
-                  transition={{ repeat: Infinity, duration: 0.25, repeatDelay: 0.5 }}
+                  className="loading-icon"
                 />
-              </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </div>

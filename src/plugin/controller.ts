@@ -205,6 +205,8 @@ figma.ui.onmessage = (msg) => {
                 // If the variable does not exist, create a new variable object and push it to the variablesInUse fills array
                 const variable = figma.variables.getVariableById(variableId);
 
+                console.log(variable);
+
                 if (variable === null) {
                   return
                 }
