@@ -195,3 +195,13 @@ button {
   margin-right: 8px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 0px 1px inset
 }
+
+.refresh {
+  padding: 12px;
+  border-radius: 100px;
+  background-color: #0D99FF;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  box-shadow: 0 4px 11px rgba(0, 0, 0, 0.14);
+}

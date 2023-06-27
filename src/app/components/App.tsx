@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import VariableListItem from "./VariableListItem";
 import variableIcon from '../assets/variable.svg';
 import variableIconBrand from '../assets/variable-brand.svg';
+import refreshIcon from '../assets/refresh.svg';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/ui.css';
 
@@ -11,10 +12,12 @@ function App() {
   const [showPreloader, setShowPreloader] = useState(false);
 
   const variablesInUseRef = useRef([]);
+  const loadingDoneRef = useRef(false);
 
   const onFindVariables = () => {
-    parent.postMessage({ pluginMessage: { type: 'find-variables' } }, '*');
+    setLoadingDone(false);
     setShowPreloader(true);
+    parent.postMessage({ pluginMessage: { type: 'find-variables' } }, '*');
   };
 
   React.useEffect(() => {
@@ -28,8 +31,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    variablesInUseRef.current = variablesInUse; // Update the ref when variablesInUse state changes
+    variablesInUseRef.current = variablesInUse;
   }, [variablesInUse]);
+
+  useEffect(() => {
+    loadingDoneRef.current = loadingDone;
+  }, [loadingDone]);
 
   return (
     <div>
@@ -86,6 +93,11 @@ function App() {
                   <VariableListItem key={index} variable={variable} />
                 ))}
               </ul>
+              <motion.div className="refresh" onClick={onFindVariables} whileTap={{ scale: 0.98, opacity: 0.8 }}>
+                <motion.img
+                  src={refreshIcon}
+                />
+              </motion.div>
             </div>
           )}
         </div>
