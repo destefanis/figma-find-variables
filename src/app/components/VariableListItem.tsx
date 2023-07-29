@@ -8,6 +8,8 @@ import defaultIcon from '../assets/string.svg';
 const VariableListItem = ({ variable }) => {
   const { name, type, value } = variable;
 
+  // console.log(value);
+
   let iconSrc = defaultIcon;
 
   switch (type) {

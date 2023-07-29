@@ -205,7 +205,7 @@ figma.ui.onmessage = (msg) => {
                 // If the variable does not exist, create a new variable object and push it to the variablesInUse fills array
                 const variable = figma.variables.getVariableById(variableId);
 
-                console.log(variable);
+                // console.log(variable);
 
                 if (variable === null) {
                   return
@@ -268,22 +268,43 @@ figma.ui.onmessage = (msg) => {
                     formattedValue = "False";
                   } else {
                     formattedValue = variable.valuesByMode[firstKey];
-                  }
+                  } 
 
-                  variablesInUse.variables.push({
-                    id: variableId,
-                    resolvedType: variable.resolvedType,
-                    type: typeLabel,
-                    name: variable.name,
-                    description: variable.description,
-                    key: variable.key,
-                    count: 1,
-                    collectionId: variable.variableCollectionId,
-                    valuesByMode: variable.valuesByMode,
-                    consumers: [node],
-                    value: formattedValue,
-                    cssSyntax: null,
-                  });
+                  if (typeof formattedValue === 'object' && !Array.isArray(formattedValue) && formattedValue !== null) {
+                    if (formattedValue.type === "VARIABLE_ALIAS") {
+                      let importedVariableAlias = figma.variables.getVariableById(formattedValue.id);
+                      
+                      variablesInUse.variables.push({
+                        id: variableId,
+                        resolvedType: variable.resolvedType,
+                        type: typeLabel,
+                        name: variable.name,
+                        description: variable.description,
+                        key: variable.key,
+                        count: 1,
+                        collectionId: variable.variableCollectionId,
+                        valuesByMode: variable.valuesByMode,
+                        consumers: [node],
+                        value: '"' + importedVariableAlias.name + ' (alias)"',
+                        cssSyntax: null,
+                      });
+                    }
+                  } else {
+                    variablesInUse.variables.push({
+                      id: variableId,
+                      resolvedType: variable.resolvedType,
+                      type: typeLabel,
+                      name: variable.name,
+                      description: variable.description,
+                      key: variable.key,
+                      count: 1,
+                      collectionId: variable.variableCollectionId,
+                      valuesByMode: variable.valuesByMode,
+                      consumers: [node],
+                      value: formattedValue,
+                      cssSyntax: null,
+                    });
+                  }
                 }
               }
               catch (err) {
